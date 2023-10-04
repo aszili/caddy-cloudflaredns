@@ -4,6 +4,8 @@ on:
   push:
     tags:
       - "*"
+  schedule:
+    - cron: "30 10 * * 4"      
   workflow_dispatch:
 
 env:

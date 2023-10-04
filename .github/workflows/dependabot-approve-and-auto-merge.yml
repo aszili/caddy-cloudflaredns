@@ -1,3 +1,11 @@
+name: Dependabot Pull Request Approve and Merge
+
+on: pull_request_target
+
+permissions:
+  pull-requests: write
+  contents: write
+
 jobs:
   dependabot:
     runs-on: ubuntu-latest

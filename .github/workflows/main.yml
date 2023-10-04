@@ -62,8 +62,3 @@ jobs:
             ghcr.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:${{ steps.prepare.outputs.tag }}
             ghcr.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:latest
 
-      - name: Tag and push current repo code
-        run: |
-          git config --global user.name "${{ github.repository_owner }}"
-          git tag -f -s ${{ steps.prepare.outputs.tag }} -m "built on ${{ env.SANITIZED_CADDY_VERSION }}"
-          git push origin ${{ steps.prepare.outputs.tag }}

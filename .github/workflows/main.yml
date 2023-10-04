@@ -28,6 +28,9 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           excludes: prerelease, draft
 
+      - name: Sanitize Caddy Version  
+        run: echo "SANITIZED_CADDY_VERSION=$(echo "${{ steps.caddy.outputs.release }}"|awk '{print substr($0, 2)}')" >> $GITHUB_ENV      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
@@ -51,7 +54,7 @@ jobs:
           context: .
           platforms: ${{ env.DOCKER_TARGET_PLATFORM }}
           push: true
-          build-args: CADDY_VERSION=${{ steps.caddy.outputs.release }}
+          build-args: CADDY_VERSION=${{ env.SANITIZED_CADDY_VERSION }}
           tags: |
             ghcr.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:${{ steps.prepare.outputs.tag }}
             ghcr.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:latest

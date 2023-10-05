@@ -32,10 +32,10 @@ jobs:
 
       - name: Prepare
         run: |
-          run: echo "docker_platform=${DOCKER_TARGET_PLATFORM}" >> $GITHUB_ENV
-          run: echo "builddate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-          run: echo "IMAGE_TAG=${{ steps.caddy.outputs.release }}" >> $GITHUB_ENV
-          run: echo "SANITIZED_CADDY_VERSION=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> $GITHUB_ENV
+          echo "docker_platform=${DOCKER_TARGET_PLATFORM}" >> $GITHUB_ENV
+          echo "builddate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ steps.caddy.outputs.release }}" >> $GITHUB_ENV
+          echo "SANITIZED_CADDY_VERSION=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3

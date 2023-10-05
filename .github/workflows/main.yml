@@ -34,7 +34,7 @@ jobs:
         run: |
           echo "docker_platform=${DOCKER_TARGET_PLATFORM}" >> $GITHUB_ENV
           echo "builddate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ steps.caddy.outputs.release }}" >> $GITHUB_ENV
+          echo "IMAGE_TAG=${{ steps.caddy-version.outputs.release }}" >> $GITHUB_ENV
           echo "SANITIZED_CADDY_VERSION=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> $GITHUB_ENV
 
       - name: Set up Docker Buildx

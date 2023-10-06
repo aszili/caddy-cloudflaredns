@@ -18,7 +18,7 @@ jobs:
   initialize:
     runs-on: ubuntu-latest
     outputs:
-      TARGET_IMAGE_TAG: ${{ steps.cloudflared-version.outputs.release }}
+      TARGET_IMAGE_TAG: ${{ steps.caddy-version.outputs.release }}
       CADDY_VERSION: ${{ steps.prepate.outputs.caddy-version }}
     steps:
       - name: Get latest Caddy version

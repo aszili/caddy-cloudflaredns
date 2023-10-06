@@ -7,21 +7,21 @@ on:
   schedule:
     - cron: "30 10 * * 4"
   workflow_dispatch:
-
-env:
-  DOCKER_USERNAME: ${{ github.repository_owner }}
-  DOCKER_CONTAINER_NAME: caddy-cloudflaredns
-  DOCKER_TARGET_PLATFORM: linux/amd64
+    inputs:
+      force:
+        description: Build the image even if it already exists
+        required: false
+        default: false
+        type: boolean
 
 jobs:
-  build:
+  initialize:
     runs-on: ubuntu-latest
+    outputs:
+      TARGET_IMAGE_TAG: ${{ steps.cloudflared-version.outputs.release }}
+      CADDY_VERSION: ${{ steps.prepate.outputs.caddy-version }}
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        if: ${{ !github.event.act }}
-
-      - name: Get latest Caddy Version
+      - name: Get latest Caddy version
         id: caddy-version
         uses: pozetroninc/github-action-get-latest-release@v0.7.0
         with:
@@ -31,29 +31,14 @@ jobs:
           excludes: prerelease, draft
 
       - name: Prepare
+        id: prepare
         run: |
-          echo "docker_platform=${DOCKER_TARGET_PLATFORM}" >> $GITHUB_ENV
-          echo "builddate=$(date +'%Y-%m-%d')" >> $GITHUB_ENV
-          echo "IMAGE_TAG=${{ steps.caddy-version.outputs.release }}" >> $GITHUB_ENV
-          echo "SANITIZED_CADDY_VERSION=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> $GITHUB_ENV
+          echo "caddy-version=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> "$GITHUB_OUTPUT"
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Login to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Build container and Push
-        uses: docker/build-push-action@v5
-        with:
-          context: .
-          platforms: ${{ env.DOCKER_TARGET_PLATFORM }}
-          push: true
-          build-args: CADDY_VERSION=${{ env.SANITIZED_CADDY_VERSION }}
-          tags: |
-            ghcr.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:${{ env.IMAGE_TAG }}
-            ghcr.io/${{ env.DOCKER_USERNAME }}/${{ env.DOCKER_CONTAINER_NAME }}:latest
+  build:
+    needs: initialize
+    uses: aszili/github-actions/.github/workflows/build-docker-image.yml@main
+    with:
+      target_tag: ${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
+      build_args: CADDY_VERSION=${{ needs.initialize.outputs.CADDY_VERSION }}
+      force: ${{ inputs.force }}

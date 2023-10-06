@@ -19,7 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       TARGET_IMAGE_TAG: ${{ steps.caddy-version.outputs.release }}
-      CADDY_VERSION: ${{ steps.prepate.outputs.caddy-version }}
+      CADDY_VERSION: ${{ steps.prepare.outputs.caddy-version }}
     steps:
       - name: Get latest Caddy version
         id: caddy-version
@@ -32,8 +32,7 @@ jobs:
 
       - name: Prepare
         id: prepare
-        run: |
-          echo "caddy-version=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> $GITHUB_OUTPUT
+        run: echo "caddy-version=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> $GITHUB_OUTPUT
 
   build:
     needs: initialize

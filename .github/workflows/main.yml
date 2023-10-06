@@ -33,7 +33,7 @@ jobs:
       - name: Prepare
         id: prepare
         run: |
-          echo "caddy-version=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> "$GITHUB_OUTPUT"
+          echo "caddy-version=$(echo "${{ steps.caddy-version.outputs.release }}"|awk '{print substr($0, 2)}')" >> $GITHUB_OUTPUT
 
   build:
     needs: initialize

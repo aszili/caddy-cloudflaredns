@@ -40,4 +40,4 @@ jobs:
     with:
       target_tag: ${{ needs.initialize.outputs.TARGET_IMAGE_TAG }}
       build_args: CADDY_VERSION=${{ needs.initialize.outputs.CADDY_VERSION }}
-      force: ${{ inputs.force }}
+      force: ${{ false || inputs.force}}

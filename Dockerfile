@@ -1,14 +1,15 @@
-ARG CADDY_VERSION=2
+ARG CADDY_VERSION=2.10.2
 
-FROM caddy:2.10.2-builder-alpine AS builder
+FROM caddy:${CADDY_VERSION}-builder-alpine AS builder
 RUN xcaddy build \
   --with github.com/caddy-dns/cloudflare
 
-FROM gcr.io/distroless/static-debian12:nonroot
+FROM dhi.io/caddy:2
 
 ENV XDG_CONFIG_HOME=/config XDG_DATA_HOME=/data
-COPY --from=builder --chown=nonroot:nonroot /usr/bin/caddy /usr/bin/caddy
+COPY --from=builder /usr/bin/caddy /usr/local/bin/caddy
 
-USER nonroot
+USER 65532:65532
 
-ENTRYPOINT ["caddy", "run", "--config", "/etc/caddy/Caddyfile"]
+ENTRYPOINT ["caddy"]
+CMD ["run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]

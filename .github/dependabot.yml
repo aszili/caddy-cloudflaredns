@@ -14,6 +14,8 @@ updates:
       interval: daily
     assignees:
       - aszili
+    ignore:
+      - dependency-name: "dhi.io/caddy"
 
   - package-ecosystem: npm
     directory: /

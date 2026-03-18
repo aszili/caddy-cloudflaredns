@@ -1,6 +1,6 @@
 {
   "private": true,
   "dependencies": {
-    "caddy": "github:caddyserver/caddy#v2.11.1"
+    "caddy-cloudflaredns": "github:caddyserver/caddy#v2.11.1"
   }
 }

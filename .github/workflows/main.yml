@@ -24,10 +24,32 @@ jobs:
       package_name: caddy-cloudflaredns
       output_env_var: CADDY_VERSION
 
-  build:
+  wait-for-docker:
     needs: initialize
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ needs.initialize.outputs.version }}
+    steps:
+      - name: Wait for caddy:${{ needs.initialize.outputs.version }} on Docker Hub
+        run: |
+          VERSION="${{ needs.initialize.outputs.version }}"
+          for i in $(seq 1 24); do
+            STATUS=$(curl -sf -o /dev/null -w "%{http_code}" \
+              "https://hub.docker.com/v2/repositories/library/caddy/tags/${VERSION}/")
+            if [ "$STATUS" = "200" ]; then
+              echo "caddy:${VERSION} is available"
+              exit 0
+            fi
+            echo "Attempt $i/24: caddy:${VERSION} not yet on Docker Hub, waiting 30 minutes..."
+            sleep 1800
+          done
+          echo "Timed out after 12 hours waiting for caddy:${VERSION}"
+          exit 1
+
+  build:
+    needs: wait-for-docker
     uses: aszili/github-actions/.github/workflows/build-docker-image.yml@main
     with:
-      target_tag: ${{ needs.initialize.outputs.version }}
-      build_args: CADDY_VERSION=${{ needs.initialize.outputs.version }}
+      target_tag: ${{ needs.wait-for-docker.outputs.version }}
+      build_args: CADDY_VERSION=${{ needs.wait-for-docker.outputs.version }}
       force: ${{ contains(inputs.force, 'true') }}
